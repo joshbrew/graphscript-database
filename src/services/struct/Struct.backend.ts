@@ -38,7 +38,7 @@ type CollectionType = any | {
 }
 
 
-const defaultCollections = [
+export const defaultCollections = [
     'profile',
     'group',
     'authorization',
@@ -172,10 +172,10 @@ export class StructBackend extends Service {
 
         if(struct.accessToken) {
             this.accessTokens.set(requestingUserId, token);
-        }
+        } else if (this.useAccessTokens) return false; //no access token, reject
         if(struct.refreshToken) {
             this.refreshTokens.set(requestingUserId, struct.refreshToken);
-        }
+        } else if (this.useRefreshTokens) return false; //no refresh token, reject
 
         //don't save these to mongodb
         delete struct.accessToken;
@@ -195,6 +195,7 @@ export class StructBackend extends Service {
                 return true;
         }
         if(this.debug) console.log('setUser user:',user,'input:',struct,'output',data);
+
         return data;
     }
 
@@ -1037,6 +1038,7 @@ export class StructBackend extends Service {
                 await users;
                 
                 arr = await users.toArray();
+                console.log(arr);
             } else {
                 arr = [] as any;
                 for(let i = 0; i < query.length; i++) {

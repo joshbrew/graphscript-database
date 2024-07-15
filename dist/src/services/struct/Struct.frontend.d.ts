@@ -1,5 +1,5 @@
 import { DataTablet } from './datastructures/index';
-import { Data, ProfileStruct, AuthorizationStruct, GroupStruct, DataStruct, EventStruct, ChatroomStruct, CommentStruct, Struct } from './datastructures/types';
+import { Data, ProfileStruct, AuthorizationStruct, GroupStruct, DataStruct, EventStruct, ChatroomStruct, CommentStruct, Struct, NotificationStruct } from './datastructures/types';
 import { TimeSpecifier } from './genTimestamps';
 import { Service } from 'graphscript-core';
 import { User } from 'graphscript-router';
@@ -21,13 +21,14 @@ export declare class StructFrontend extends Service {
     constructor(options?: any, user?: Partial<User>);
     getToken(user: Partial<ProfileStruct>): string;
     setupUser: (userinfo: Partial<User>, callback?: (currentUser: any) => void) => Promise<any>;
-    baseServerCallback: (data: any) => void;
+    baseServerCallback: (data: any) => Promise<void>;
     structNotification: () => void;
     structDeleted: (struct: {
         _id: string;
         structType: string;
     }) => void;
-    onResult: (data: any) => void;
+    onData: (data: any) => void;
+    onNotify: (notification: NotificationStruct) => void;
     randomId(tag?: string): string;
     /**
         let struct = {
@@ -43,39 +44,39 @@ export declare class StructFrontend extends Service {
     }, parentStruct?: {
         [key: string]: any;
     }, updateServer?: boolean) => Promise<Struct>;
-    getUser: (info?: string | number, basicInfo?: boolean, callback?: (data: any) => void) => Promise<{
+    getUser: (info?: string | number, basicInfo?: boolean, callback?: (data: any) => Promise<void>) => Promise<{
         user: ProfileStruct;
         groups: GroupStruct[];
         authorizations: AuthorizationStruct[];
     }>;
-    queryUsers: (info: string, skip?: number, limit?: number, callback?: (data: any) => void) => Promise<any>;
-    getUsers: (ids?: (string | number)[], basicInfo?: boolean, callback?: (data: any) => void) => Promise<any>;
-    getUsersByRole: (userRole: string, callback?: (data: any) => void) => Promise<any>;
-    getAllUserData: (ownerId: string | number, excluded?: any[], timeRange?: [number | TimeSpecifier, number | TimeSpecifier], callback?: (data: any) => void) => Promise<any>;
-    query: (collection: string, mongoQuery?: {}, findOne?: boolean, skip?: number, callback?: (data: any) => void) => Promise<any>;
+    queryUsers: (info: string, skip?: number, limit?: number, callback?: (data: any) => Promise<void>) => Promise<any>;
+    getUsers: (ids?: (string | number)[], basicInfo?: boolean, callback?: (data: any) => Promise<void>) => Promise<any>;
+    getUsersByRole: (userRole: string, callback?: (data: any) => Promise<void>) => Promise<any>;
+    getAllUserData: (ownerId: string | number, excluded?: any[], timeRange?: [number | TimeSpecifier, number | TimeSpecifier], callback?: (data: any) => Promise<void>) => Promise<any>;
+    query: (collection: string, mongoQuery?: {}, findOne?: boolean, skip?: number, callback?: (data: any) => Promise<void>) => Promise<any>;
     getDataByTimeRange(collection: any, timeRange: [number | TimeSpecifier, number | TimeSpecifier], ownerId?: string | number | undefined, limit?: number, skip?: number, key?: string): Promise<any>;
-    getData: (collection: string, ownerId?: string | number | undefined, searchDict?: any, limit?: number, skip?: number, callback?: (data: any) => void) => Promise<any>;
-    getDataByIds: (structIds?: any[], ownerId?: string | number | undefined, collection?: string | undefined, callback?: (data: any) => void) => Promise<any>;
-    getStructParentData: (struct: Struct, callback?: (data: any) => void) => Promise<any>;
-    setUser: (userStruct: ProfileStruct, callback?: (data: any) => void) => Promise<any>;
-    checkUserToken: (usertoken: any, user?: User, callback?: (data: any) => void) => Promise<any>;
-    setData: (structs?: Partial<Struct> | Partial<Struct>[], notify?: boolean, callback?: (data: any) => void) => Promise<any>;
-    updateServerData: (structs?: Partial<Struct> | Partial<Struct>[], notify?: boolean, callback?: (data: any) => void) => Promise<any>;
-    deleteData: (structs?: any[], callback?: (data: any) => void) => Promise<any>;
-    deleteUser: (userId?: string, deleteData?: boolean, callback?: (data: any) => void) => Promise<any>;
-    setGroup: (groupStruct: GroupStruct, callback?: (data: any) => void) => Promise<any>;
-    getUserGroups: (userId?: string, groupId?: string, callback?: (data: any) => void) => Promise<any>;
-    deleteGroup: (groupId: any, callback?: (data: any) => void) => Promise<any>;
-    setAuthorization: (authorizationStruct: AuthorizationStruct, callback?: (data: any) => void) => Promise<any>;
-    getAuthorizations: (userId?: string, authorizationId?: string, callback?: (data: any) => void) => Promise<any>;
-    deleteAuthorization: (authorizationId: any, callback?: (data: any) => void) => Promise<any>;
+    getData: (collection: string, ownerId?: string | number | undefined, searchDict?: any, limit?: number, skip?: number, callback?: (data: any) => Promise<void>) => Promise<any>;
+    getDataByIds: (structIds?: any[], ownerId?: string | number | undefined, collection?: string | undefined, callback?: (data: any) => Promise<void>) => Promise<any>;
+    getStructParentData: (struct: Struct, callback?: (data: any) => Promise<void>) => Promise<any>;
+    setUser: (userStruct: ProfileStruct, callback?: (data: any) => Promise<void>) => Promise<any>;
+    checkUserToken: (usertoken: any, user?: User, callback?: (data: any) => Promise<void>) => Promise<any>;
+    setData: (structs?: Partial<Struct> | Partial<Struct>[], notify?: boolean, callback?: (data: any) => Promise<void>) => Promise<any>;
+    updateServerData: (structs?: Partial<Struct> | Partial<Struct>[], notify?: boolean, callback?: (data: any) => Promise<void>) => Promise<any>;
+    deleteData: (structs?: any[], callback?: (data: any) => Promise<void>) => Promise<any>;
+    deleteUser: (userId?: string, deleteData?: boolean, callback?: (data: any) => Promise<void>) => Promise<any>;
+    setGroup: (groupStruct: GroupStruct, callback?: (data: any) => Promise<void>) => Promise<any>;
+    getUserGroups: (userId?: string, groupId?: string, callback?: (data: any) => Promise<void>) => Promise<any>;
+    deleteGroup: (groupId: any, callback?: (data: any) => Promise<void>) => Promise<any>;
+    setAuthorization: (authorizationStruct: AuthorizationStruct, callback?: (data: any) => Promise<void>) => Promise<any>;
+    getAuthorizations: (userId?: string, authorizationId?: string, callback?: (data: any) => Promise<void>) => Promise<any>;
+    deleteAuthorization: (authorizationId: any, callback?: (data: any) => Promise<void>) => Promise<any>;
     checkForNotifications: (userId?: string) => Promise<any>;
     resolveNotifications: (notifications?: any[], pull?: boolean, user?: Partial<User>) => Promise<any>;
     setAuthorizationsByGroup: (user?: User) => Promise<any[]>;
     deleteRoom: (roomStruct: any) => Promise<any>;
     deleteComment: (commentStruct: any) => Promise<any>;
-    getUserDataByAuthorization: (authorizationStruct: any, collection: any, searchDict: any, limit?: number, skip?: number, callback?: (data: any) => void) => Promise<unknown>;
-    getUserDataByAuthorizationGroup: (groupId: string, collection: any, searchDict: any, limit?: number, skip?: number, callback?: (data: any) => void) => Promise<any[]>;
+    getUserDataByAuthorization: (authorizationStruct: any, collection: any, searchDict: any, limit?: number, skip?: number, callback?: (data: any) => Promise<void>) => Promise<unknown>;
+    getUserDataByAuthorizationGroup: (groupId: string, collection: any, searchDict: any, limit?: number, skip?: number, callback?: (data: any) => Promise<void>) => Promise<any[]>;
     overwriteLocalData(structs: any): void;
     setLocalData(structs: any): void;
     getLocalData(collection: any, query?: any): any;

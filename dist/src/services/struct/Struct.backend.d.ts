@@ -14,6 +14,7 @@ type CollectionType = any | {
         [key: string]: any;
     };
 };
+export declare const defaultCollections: string[];
 export declare class StructBackend extends Service {
     name: string;
     debug: boolean;

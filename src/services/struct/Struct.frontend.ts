@@ -1,5 +1,5 @@
 import { DataTablet, DS } from './datastructures/index'
-import { Data, ProfileStruct, AuthorizationStruct, GroupStruct, DataStruct, EventStruct, ChatroomStruct, CommentStruct, Struct } from './datastructures/types';
+import { Data, ProfileStruct, AuthorizationStruct, GroupStruct, DataStruct, EventStruct, ChatroomStruct, CommentStruct, Struct, NotificationStruct } from './datastructures/types';
 import { genTimestampFromString, TimeSpecifier } from './genTimestamps'
 import { Service } from 'graphscript-core';
 import { User } from 'graphscript-router';
@@ -16,6 +16,9 @@ export type StructFrontendProps = {
     useAccessTokens?:boolean,
     useRefreshTokens?:boolean
 } & GraphNodeProperties
+
+
+//TODO SIGN IN SYSTEM WORKFLOW AUTOMATION, THIS IS STILL PRETTY MANUAL
 
 export class StructFrontend extends Service {
     name='structs'
@@ -50,7 +53,7 @@ export class StructFrontend extends Service {
     //TODO: make this able to be awaited to return the currentUser
     //uses a bunch of the functions below to set up a user and get their data w/ some cross checking for consistent profiles
     setupUser = async(userinfo:Partial<User>, callback=(currentUser)=>{}) => {
-
+        
         if(!userinfo) {
             console.error('must provide a minimum info object! e.g. {_id:"abc123"}');
             callback(undefined);
@@ -190,7 +193,7 @@ export class StructFrontend extends Service {
     }
 
     //default socket response for the platform
-    baseServerCallback = (data) => {
+    baseServerCallback = async (data) => {
         let structs = data;
         if(typeof data === 'object' && data?.structType) structs = [data];
         if(Array.isArray(structs)) { //getUserData response
@@ -201,7 +204,8 @@ export class StructFrontend extends Service {
 
             if(this.tablet) this.tablet.sortStructsIntoTable(filtered);
 
-            structs.forEach((struct)=>{
+            for(let i = 0; i < structs.length; i++) {
+                const struct = structs[i];
                 if(typeof struct === 'object') {
                     if((!struct.structType) || struct.structType === 'USER') {
                         // console.log(struct)
@@ -240,7 +244,7 @@ export class StructFrontend extends Service {
                                     delete this.currentUser.userRoles[struct.name+'_client'];
                                     uset = true;
                                 }
-                                if(uset) this.setUser(this.currentUser as any); //update roles
+                                if(uset) await this.setUser(this.currentUser as any); //update roles
                             }
                         }
                         this.setLocalData(struct);
@@ -263,20 +267,24 @@ export class StructFrontend extends Service {
                                 (struct.parent.structType === 'user' || //all of the notification instances we want to pull automatically, chats etc should resolve when we want to view/are actively viewing them
                                 struct.parent.structType === 'dataInstance'  || 
                                 struct.parent.structType === 'schedule'  || 
-                                struct.parent.structType === 'authorization')) 
-                                {
-                                this.resolveNotifications([struct],true);
+                                struct.parent.structType === 'authorization')
+                            ) {
+                                await this.resolveNotifications([struct],true);
                             }
+
+                            this.onNotify(struct);
                         } else { 
                             this.overwriteLocalData(struct);
                             //console.log(struct)
                         }
                     }
                 }
-            });
+
+            }
+                
         } 
 
-        this.onResult(data);
+        this.onData(data);
     }
 
     structNotification = () => {
@@ -289,10 +297,13 @@ export class StructFrontend extends Service {
     }
 
     //just a customizable callback to preserve the default while adding your own
-    onResult = (data) => {
+    onData = (data) => {
         
     }
 
+    onNotify = (notification:NotificationStruct) => {
+
+    }
 
     //---------------------------------------------
     
@@ -327,6 +338,7 @@ export class StructFrontend extends Service {
 
     //info can be email, id, username, or name. Returns their profile and authorizations
     getUser = async (info:string|number='', basicInfo?:boolean, callback=this.baseServerCallback) => {
+        console.log(this.currentUser);
         if(this.currentUser?.request) {
             let res = (await this.currentUser.request({route:'getUser', args:[this.currentUser._id, info, basicInfo, this.getToken(this.currentUser)]}));
             callback(res);

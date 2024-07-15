@@ -44,13 +44,13 @@ export declare function EDAStruct(_?: string, __?: {}, ___?: {
 }): void;
 export declare function PPGStruct(tag?: string | number | undefined, assignProps?: types.ArbitraryObject, parentUser?: Partial<types.ProfileStruct> | {
     _id: string;
-}, parentStruct?: types.ArbitraryObject): types.FNIRSStruct;
+}, parentStruct?: types.ArbitraryObject): types.PPGStruct;
 export declare function HRVStruct(tag?: string | number | undefined, assignProps?: types.ArbitraryObject, parentUser?: Partial<types.ProfileStruct> | {
     _id: string;
-}, parentStruct?: types.ArbitraryObject): types.ECGStruct;
+}, parentStruct?: types.ArbitraryObject): types.HRVStruct;
 export declare function EMGStruct(tag?: string | number | undefined, assignProps?: types.ArbitraryObject, parentUser?: Partial<types.ProfileStruct> | {
     _id: string;
-}, parentStruct?: types.ArbitraryObject): types.EEGStruct;
+}, parentStruct?: types.ArbitraryObject): types.EMGStruct;
 export declare function ProfileStruct(tag?: string | number | undefined, assignProps?: types.ArbitraryObject, parentUser?: Partial<types.ProfileStruct> | {
     _id: string;
 }, parentStruct?: types.ArbitraryObject): types.ProfileStruct;
