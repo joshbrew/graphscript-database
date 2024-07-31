@@ -1,6 +1,6 @@
 {
     "name": "graphscript-database",
-    "version": "0.3.20",
+    "version": "0.3.31",
     "description": "Comprehensive acyclic-graph based application architecture with microservices and networking",
     "main": "dist/index.js",
     "module": "dist/index.esm.js",
@@ -23,9 +23,9 @@
     "author": "Joshua Brewster",
     "license": "LGPL-3.0-or-later",
     "devDependencies": {
+        "@types/node": "~18.7.15",
         "graphscript-core": "~0.3.6",
-        "graphscript-router": "^0.3.20",
-        "@types/node": "~18.7.15"
+        "graphscript-router": "^0.3.31"
     },
     "nodemonConfig": {
         "env": {
